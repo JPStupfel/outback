@@ -1,6 +1,7 @@
 const FLOOR_HEIGHT = 48;
-const JUMP_FORCE = 800;
-const SPEED = 480;
+const JUMP_FORCE = 1000; // Double the jump force
+const BOOST_FORCE = 1000; // Smaller boost force for flying
+const SPEED = 300;
 
 // initialize context
 kaboom();
@@ -8,11 +9,12 @@ kaboom();
 setBackground(141, 183, 255);
 
 // load assets
+loadSprite("bean", "https://kaboomjs.com/sprites/bean.png");
 loadSprite("snake", "./snake.png"); // Load your custom sprite
 
 scene("game", () => {
     // define gravity
-    setGravity(2400);
+    setGravity(2000);
 
     // add a game object to screen
     const player = add([
@@ -21,6 +23,7 @@ scene("game", () => {
         pos(80, 40),
         area(),
         body(),
+        scale(0.5), // Scale the sprite to half its original size
     ]);  
 
     // floor
@@ -37,11 +40,14 @@ scene("game", () => {
     function jump() {
         if (player.isGrounded()) {
             player.jump(JUMP_FORCE);
+        } else {
+            player.jump(BOOST_FORCE); // Apply a smaller boost force while in the air
         }
     }
 
     // jump when user press space
-    onKeyPress("w", jump);
+    // jump on pressing any key
+    onKeyPress("space", jump);
     onClick(jump);
 
     function spawnTree() {
@@ -58,7 +64,7 @@ scene("game", () => {
         ]);
 
         // wait a random amount of time to spawn next tree
-        wait(rand(0.5, 1.5), spawnTree);
+        wait(rand(2.5, 4.5), spawnTree);
     }
 
     // start spawning trees
