@@ -8,7 +8,7 @@ kaboom();
 setBackground(141, 183, 255);
 
 // load assets
-loadSprite("bean", "https://kaboomjs.com/sprites/bean.png");
+loadSprite("snake", "./snake.png"); // Load your custom sprite
 
 scene("game", () => {
     // define gravity
@@ -17,7 +17,7 @@ scene("game", () => {
     // add a game object to screen
     const player = add([
         // list of components
-        sprite("bean"),
+        sprite("snake"), // Use your custom sprite
         pos(80, 40),
         area(),
         body(),
