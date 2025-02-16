@@ -11,6 +11,7 @@ setBackground(141, 183, 255);
 // load assets
 loadSprite("bean", "https://kaboomjs.com/sprites/bean.png");
 loadSprite("snake", "./snake.png"); // Load your custom sprite
+loadSprite("chaz", "./Chaz_Hunt.webp    "); 
 
 scene("game", () => {
     // define gravity
@@ -50,6 +51,22 @@ scene("game", () => {
     onKeyPress("space", jump);
     onClick(jump);
 
+    function spawnChaz() {
+        // add tree obj
+        add([
+            sprite("chaz"), // Use the custom tree sprite
+            area(),
+            pos(width(), height() - FLOOR_HEIGHT),
+            anchor("botleft"),
+            scale(rand(0.3, 0.5)), // Scale the tree sprite
+            move(LEFT, SPEED),
+            "chaz",
+        ]);
+
+        // wait a random amount of time to spawn next tree
+        wait(rand(2.5, 4.5), spawnChaz);
+    }
+
     function spawnTree() {
         // add tree obj
         add([
@@ -64,12 +81,20 @@ scene("game", () => {
         ]);
 
         // wait a random amount of time to spawn next tree
-        wait(rand(2.5, 4.5), spawnTree);
+        wait(rand(4.5, 8.5), spawnTree);
     }
 
     // start spawning trees
+    spawnChaz();
     spawnTree();
 
+    // lose if player collides with any game obj with tag "tree"
+    player.onCollide('chaz', () => {
+        // go to "lose" scene and pass the score
+        go("lose", score);
+        burp();
+        addKaboom(player.pos);
+    });
     // lose if player collides with any game obj with tag "tree"
     player.onCollide("tree", () => {
         // go to "lose" scene and pass the score
