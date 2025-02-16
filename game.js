@@ -11,7 +11,10 @@ setBackground(141, 183, 255);
 // load assets
 loadSprite("bean", "https://kaboomjs.com/sprites/bean.png");
 loadSprite("snake", "./snake.png"); // Load your custom sprite
-loadSprite("chaz", "./Chaz_Hunt.webp    "); 
+loadSprite("chaz", "./Chaz_Hunt.webp"); 
+loadSprite("koala", "./koala.webp");
+loadSprite("lizard", "./lizzard.webp");
+loadSprite("spider", "./spider.jpeg");
 
 scene("game", () => {
     // define gravity
@@ -51,52 +54,31 @@ scene("game", () => {
     onKeyPress("space", jump);
     onClick(jump);
 
-    function spawnChaz() {
-        // add tree obj
+    const enemySprites = ["chaz", "koala", "lizard", "spider"];
+
+    function spawnEnemy() {
+        const spriteName = choose(enemySprites); // Randomly select a sprite
+
+        // add enemy obj
         add([
-            sprite("chaz"), // Use the custom tree sprite
+            sprite(spriteName), // Use the randomly selected sprite
             area(),
             pos(width(), height() - FLOOR_HEIGHT),
             anchor("botleft"),
-            scale(rand(0.3, 0.5)), // Scale the tree sprite
+            scale(rand(0.3, 0.5)), // Scale the sprite
             move(LEFT, SPEED),
-            "chaz",
+            "enemy",
         ]);
 
-        // wait a random amount of time to spawn next tree
-        wait(rand(2.5, 4.5), spawnChaz);
+        // wait a random amount of time to spawn next enemy
+        wait(rand(2.5, 4.5), spawnEnemy);
     }
 
-    function spawnTree() {
-        // add tree obj
-        add([
-            rect(48, rand(32, 96)),
-            area(),
-            outline(4),
-            pos(width(), height() - FLOOR_HEIGHT),
-            anchor("botleft"),
-            color(238, 70, 0),
-            move(LEFT, SPEED),
-            "tree",
-        ]);
+    // start spawning enemies
+    spawnEnemy();
 
-        // wait a random amount of time to spawn next tree
-        wait(rand(4.5, 8.5), spawnTree);
-    }
-
-    // start spawning trees
-    spawnChaz();
-    spawnTree();
-
-    // lose if player collides with any game obj with tag "tree"
-    player.onCollide('chaz', () => {
-        // go to "lose" scene and pass the score
-        go("lose", score);
-        burp();
-        addKaboom(player.pos);
-    });
-    // lose if player collides with any game obj with tag "tree"
-    player.onCollide("tree", () => {
+    // lose if player collides with any game obj with tag "enemy"
+    player.onCollide("enemy", () => {
         // go to "lose" scene and pass the score
         go("lose", score);
         burp();
