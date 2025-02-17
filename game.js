@@ -13,7 +13,7 @@ loadSprite("bean", "https://kaboomjs.com/sprites/bean.png");
 loadSprite("snake", "./snake.png"); // Load your custom sprite
 loadSprite("chaz", "./Chaz_Hunt.webp"); 
 loadSprite("koala", "./koala.webp");
-loadSprite("lizard", "./lizzard.webp");
+loadSprite("lizard", "./lizard.webp");
 loadSprite("spider", "./spider.jpeg");
 
 scene("game", () => {
