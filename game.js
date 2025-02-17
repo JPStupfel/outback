@@ -2,6 +2,7 @@ const FLOOR_HEIGHT = 48;
 const JUMP_FORCE = 1000; // Double the jump force
 const BOOST_FORCE = 1000; // Smaller boost force for flying
 const SPEED = 300;
+const BACKGROUND_SPEED = 100; // Speed for background trees
 
 // initialize context
 kaboom();
@@ -20,15 +21,7 @@ scene("game", () => {
     // define gravity
     setGravity(2000);
 
-    // add a game object to screen
-    const player = add([
-        // list of components
-        sprite("snake"), // Use your custom sprite
-        pos(80, 40),
-        area(),
-        body(),
-        scale(0.5), // Scale the sprite to half its original size
-    ]);  
+
 
     // floor
     add([
@@ -76,8 +69,44 @@ scene("game", () => {
         wait(rand(2.5, 4.5), spawnEnemy);
     }
 
-    // start spawning enemies
+    function spawnTree() {
+        // Update here to make the background show brown triangles (that symbolize trees) go by
+        add([
+            pos(width(), height() - FLOOR_HEIGHT),
+            move(LEFT, BACKGROUND_SPEED),
+            rect(48, 48),
+            color(139, 69, 19), // Brown color
+            anchor("botleft"),
+            "tree",
+            z(-1),
+        ]);
+
+        // Add green circle on top of the brown rectangle
+        add([
+            pos(width() + 24, height() - FLOOR_HEIGHT - 24*2.5), // Adjust position to be on top of the rectangle
+            move(LEFT, BACKGROUND_SPEED),
+            circle(44),
+            color(34, 139, 34), // Green color
+            anchor("center"),
+            "tree",
+            z(-1),
+        ])
+
+        wait(rand(1, 3), spawnTree);
+    }
+
+    // start spawning enemies and trees
     spawnEnemy();
+    spawnTree();
+    // add a game object to screen
+    const player = add([
+        // list of components
+        sprite("snake"), // Use your custom sprite
+        pos(80, 40),
+        area(),
+        body(),
+        scale(0.5), // Scale the sprite to half its original size
+    ]);  
 
     // lose if player collides with any game obj with tag "enemy"
     player.onCollide("enemy", () => {
