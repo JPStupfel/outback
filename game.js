@@ -44,7 +44,8 @@ scene("game", () => {
     function jump() {
         if (player.isGrounded()) {
             player.jump(JUMP_FORCE);
-        } else {
+            // Ensure the player's top can't go above the visible display
+        } else if (player.pos.y > 40) {
             player.jump(BOOST_FORCE); // Apply a smaller boost force while in the air
         }
     }
