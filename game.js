@@ -1,29 +1,32 @@
-const FLOOR_HEIGHT = 48;
-const JUMP_FORCE = 1000; // Double the jump force
-const BOOST_FORCE = 1000; // Smaller boost force for flying
-const SPEED = 300;
+import { jump, spawnEnemy, spawnTree } from './game.util.js'; // Import methods from game.util.js
+
+// Constants for game settings
+const FLOOR_HEIGHT = 48; // Height of the floor
+const JUMP_FORCE = 1000; // Force applied when the player jumps
+const BOOST_FORCE = 1000; // Force applied when the player boosts in the air
+const SPEED = 300; // Speed of the enemies
 const BACKGROUND_SPEED = 100; // Speed for background trees
 
-// initialize context
+// Initialize Kaboom context
 kaboom();
 
+// Set background color
 setBackground(141, 183, 255);
 
-// load assets
+// Load assets (sprites)
 loadSprite("bean", "https://kaboomjs.com/sprites/bean.png");
-loadSprite("snake", "./snake.png"); // Load your custom sprite
+loadSprite("snake", "./snake.png"); // Load custom player sprite
 loadSprite("chaz", "./Chaz_Hunt.webp"); 
 loadSprite("koala", "./koala.webp");
 loadSprite("lizard", "./lizard.webp");
 loadSprite("spider", "./spider.jpeg");
 
+// Define the main game scene
 scene("game", () => {
-    // define gravity
+    // Set gravity for the game
     setGravity(2000);
 
-
-
-    // floor
+    // Add the floor to the game
     add([
         rect(width(), FLOOR_HEIGHT),
         outline(4),
@@ -34,104 +37,52 @@ scene("game", () => {
         color(132, 101, 236),
     ]);
 
-    function jump() {
-        if (player.isGrounded()) {
-            player.jump(JUMP_FORCE);
-            // Ensure the player's top can't go above the visible display
-        } else if (player.pos.y > 40) {
-            player.jump(BOOST_FORCE); // Apply a smaller boost force while in the air
-        }
-    }
-
-    // jump when user press space
-    // jump on pressing any key
-    onKeyPress("space", jump);
-    onClick(jump);
-
-    const enemySprites = ["chaz", "koala", "lizard", "spider"];
-
-    function spawnEnemy() {
-        const spriteName = choose(enemySprites); // Randomly select a sprite
-        const yPos = choose([height() - FLOOR_HEIGHT, height() / 2]); // Randomly choose between ground and halfway up
-
-        // add enemy obj
-        add([
-            sprite(spriteName), // Use the randomly selected sprite
-            area(),
-            pos(width(), yPos),
-            anchor("botleft"),
-            scale(rand(0.3, 0.5)), // Scale the sprite
-            move(LEFT, SPEED),
-            "enemy",
-        ]);
-
-        // wait a random amount of time to spawn next enemy
-        wait(rand(2.5, 4.5), spawnEnemy);
-    }
-
-    function spawnTree() {
-        // Update here to make the background show brown triangles (that symbolize trees) go by
-        add([
-            pos(width(), height() - FLOOR_HEIGHT),
-            move(LEFT, BACKGROUND_SPEED),
-            rect(48, 48),
-            color(139, 69, 19), // Brown color
-            anchor("botleft"),
-            "tree",
-            z(-1),
-        ]);
-
-        // Add green circle on top of the brown rectangle
-        add([
-            pos(width() + 24, height() - FLOOR_HEIGHT - 24*2.5), // Adjust position to be on top of the rectangle
-            move(LEFT, BACKGROUND_SPEED),
-            circle(44),
-            color(34, 139, 34), // Green color
-            anchor("center"),
-            "tree",
-            z(-1),
-        ])
-
-        wait(rand(1, 3), spawnTree);
-    }
-
-    // start spawning enemies and trees
-    spawnEnemy();
-    spawnTree();
-    // add a game object to screen
+    // Add the player to the game
     const player = add([
-        // list of components
-        sprite("snake"), // Use your custom sprite
+        sprite("snake"), // Use custom player sprite
         pos(80, 40),
         area(),
         body(),
         scale(0.5), // Scale the sprite to half its original size
-    ]);  
+    ]);
 
-    // lose if player collides with any game obj with tag "enemy"
+    // Bind jump function to space key and mouse click
+    onKeyPress("space", () => jump(player, JUMP_FORCE, BOOST_FORCE));
+    onClick(() => jump(player, JUMP_FORCE, BOOST_FORCE));
+
+    // Array of enemy sprite names
+    const enemySprites = ["chaz", "koala", "lizard", "spider"];
+
+    // Start spawning enemies and trees
+    spawnEnemy(enemySprites, FLOOR_HEIGHT, SPEED);
+    spawnTree(FLOOR_HEIGHT, BACKGROUND_SPEED);
+
+    // Handle collision with enemies
     player.onCollide("enemy", () => {
-        // go to "lose" scene and pass the score
-        go("lose", score);
-        burp();
-        addKaboom(player.pos);
+        go("lose", score); // Go to the lose scene and pass the score
+        burp(); // Play a sound effect
+        addKaboom(player.pos); // Add explosion effect
     });
 
-    // keep track of score
+    // Keep track of the score
     let score = 0;
 
+    // Add score label to the game
     const scoreLabel = add([
         text(score),
         pos(12, 12),
     ]);
 
-    // increment score every frame
+    // Increment score every frame
     onUpdate(() => {
         score++;
         scoreLabel.text = score;
     });
 });
 
+// Define the lose scene
 scene("lose", (score) => {
+    // Add player sprite to the lose scene
     add([
         sprite("bean"),
         pos(width() / 2, height() / 2 - 80),
@@ -139,17 +90,20 @@ scene("lose", (score) => {
         anchor("center"),
     ]);
 
+    // Display the score in the lose scene
     add([
         text(score),
         pos(width() / 2, height() / 2 + 80),
-        scale(2),
+        scale(2),       
         anchor("center"),
     ]);
 
+    // Restart the game when space key is pressed or mouse is clicked
     onKeyPress("space", () => go("game"));
     onClick(() => go("game"));
 });
 
+// Start the game
 go("game");
 
 // Ensure the canvas is focused when the game starts
