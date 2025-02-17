@@ -59,12 +59,13 @@ scene("game", () => {
 
     function spawnEnemy() {
         const spriteName = choose(enemySprites); // Randomly select a sprite
+        const yPos = choose([height() - FLOOR_HEIGHT, height() / 2]); // Randomly choose between ground and halfway up
 
         // add enemy obj
         add([
             sprite(spriteName), // Use the randomly selected sprite
             area(),
-            pos(width(), height() - FLOOR_HEIGHT),
+            pos(width(), yPos),
             anchor("botleft"),
             scale(rand(0.3, 0.5)), // Scale the sprite
             move(LEFT, SPEED),
