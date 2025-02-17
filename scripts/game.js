@@ -15,11 +15,11 @@ setBackground(141, 183, 255);
 
 // Load assets (sprites)
 loadSprite("bean", "https://kaboomjs.com/sprites/bean.png");
-loadSprite("snake", "./snake.png"); // Load custom player sprite
-loadSprite("chaz", "./Chaz_Hunt.webp"); 
-loadSprite("koala", "./koala.webp");
-loadSprite("lizard", "./lizard.webp");
-loadSprite("spider", "./spider.jpeg");
+loadSprite("snake", "./assets/snake.png"); // Load custom player sprite
+loadSprite("chaz", "./assets/Chaz_Hunt.webp"); 
+loadSprite("koala", "./assets/koala.webp");
+loadSprite("lizard", "./assets/lizard.webp");
+loadSprite("spider", "./assets/spider.jpeg");
 
 // Define the main game scene
 scene("game", () => {
